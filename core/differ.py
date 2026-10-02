@@ -6,11 +6,12 @@ Compares two OpenAPI specifications and detects changes in:
 - HTTP methods
 - Parameters (added, removed, modified)
 - Schemas (added, removed, property changes)
+- API version changes
 """
 
 import yaml
 import json
-from typing import Dict, Any, Set, List, Tuple
+from typing import Dict, Any, Set, List, Tuple, Optional
 
 
 class OpenAPIDiffer:
@@ -236,6 +237,19 @@ class OpenAPIDiffer:
         
         return changes
     
+    def detect_version_change(self) -> Optional[Tuple[str, str]]:
+        """
+        Detect if the API version changed between the two specs.
+        
+        Returns:
+            Tuple of (old_version, new_version) if changed, otherwise None.
+        """
+        old_version = self.old_spec.get('info', {}).get('version', '')
+        new_version = self.new_spec.get('info', {}).get('version', '')
+        if old_version != new_version:
+            return (old_version, new_version)
+        return None
+    
     def generate_report(self, format: str = 'text') -> str:
         """
         Generate diff report in text or markdown format.
@@ -257,6 +271,13 @@ class OpenAPIDiffer:
         lines.append("API Changes Summary")
         lines.append("=" * 60)
         lines.append("")
+        
+        # Version change
+        version_change = self.detect_version_change()
+        if version_change:
+            old_v, new_v = version_change
+            lines.append(f"Version changed: {old_v} -> {new_v}")
+            lines.append("")
         
         # Endpoint changes
         added_paths = self.detect_added_paths()
@@ -355,6 +376,12 @@ class OpenAPIDiffer:
         lines = []
         lines.append("## API Changes Summary\n")
         
+        # Version change
+        version_change = self.detect_version_change()
+        if version_change:
+            old_v, new_v = version_change
+            lines.append(f"**Version changed:** `{old_v}` -> `{new_v}`\n")
+        
         added_paths = self.detect_added_paths()
         if added_paths:
             lines.append(f"### Added Endpoints ({len(added_paths)})")
@@ -440,7 +467,7 @@ class OpenAPIDiffer:
                 lines.append(f"- `{prop}`")
             lines.append("")
         
-        if not any([added_paths, removed_paths, added_methods, removed_methods, 
+        if not any([version_change, added_paths, removed_paths, added_methods, removed_methods, 
                     param_changes, schema_changes['added'], schema_changes['removed'],
                     schema_changes['property_added'], schema_changes['property_removed'],
                     schema_changes['property_modified']]):
@@ -451,6 +478,7 @@ class OpenAPIDiffer:
     def generate_json_report(self) -> str:
         """Generate structured JSON report for machine consumption."""
         report = {
+            "version_change": None,
             "added_endpoints": self.detect_added_paths(),
             "removed_endpoints": self.detect_removed_paths(),
             "added_methods": [{"path": p, "method": m} for p, m in self.detect_added_methods()],
@@ -464,6 +492,12 @@ class OpenAPIDiffer:
                 "property_modified": []
             }
         }
+        
+        # Version change
+        version_change = self.detect_version_change()
+        if version_change:
+            old_v, new_v = version_change
+            report["version_change"] = {"old": old_v, "new": new_v}
         
         # Parameter changes
         param_changes = self.detect_parameter_changes()

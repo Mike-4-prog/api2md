@@ -3,11 +3,12 @@ OpenAPI Specification Validator
 
 Validates OpenAPI spec files for structural correctness.
 Detects missing required fields, invalid HTTP methods, parameter issues, etc.
+Supports $ref resolution for parameters.
 """
 
 import yaml
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import click
 
 
@@ -37,6 +38,48 @@ class OpenAPIValidator:
                 self.spec = json.load(f)
             else:
                 self.spec = yaml.safe_load(f)
+    
+    def _resolve_ref(self, obj: Any) -> Any:
+        """
+        Resolve a $ref object to its target definition.
+        
+        Handles refs to:
+        - components/parameters
+        - components/schemas
+        - components/responses
+        - components/requestBodies
+        - components/headers
+        - components/examples
+        - components/links
+        - components/callbacks
+        
+        Args:
+            obj: An object that may contain a $ref key.
+        
+        Returns:
+            The resolved object, or the original if no ref or unresolvable.
+        """
+        if not isinstance(obj, dict):
+            return obj
+        if '$ref' not in obj:
+            return obj
+        
+        ref = obj['$ref']
+        if not isinstance(ref, str) or not ref.startswith('#/'):
+            return obj
+        
+        parts = ref.lstrip('#/').split('/')
+        if len(parts) < 3 or parts[0] != 'components':
+            return obj
+        
+        # Walk the path through the spec
+        current = self.spec
+        for part in parts:
+            if not isinstance(current, dict) or part not in current:
+                return obj
+            current = current[part]
+        
+        return current
     
     def validate(self) -> bool:
         """
@@ -107,12 +150,26 @@ class OpenAPIValidator:
                         self.warnings.append(f"Operation {method.upper()} {path} has no responses")
     
     def _check_parameters(self) -> None:
-        """Validate parameter structure (name, location)."""
+        """Validate parameter structure (name, location). Resolves $ref."""
         paths = self.spec.get('paths', {})
         
         for path, path_item in paths.items():
             if not isinstance(path_item, dict):
                 continue
+            
+            # Path-level parameters
+            path_level_params = path_item.get('parameters', [])
+            for param in path_level_params:
+                resolved = self._resolve_ref(param)
+                if not isinstance(resolved, dict):
+                    self.errors.append(f"Parameter is not an object in {path}")
+                    continue
+                if 'name' not in resolved:
+                    self.errors.append(f"Parameter missing 'name' in {path}")
+                if 'in' not in resolved:
+                    self.errors.append(f"Parameter missing 'in' in {path}")
+            
+            # Operation-level parameters
             for method, operation in path_item.items():
                 if method == 'parameters':
                     continue
@@ -121,9 +178,13 @@ class OpenAPIValidator:
                 
                 parameters = operation.get('parameters', [])
                 for param in parameters:
-                    if 'name' not in param:
+                    resolved = self._resolve_ref(param)
+                    if not isinstance(resolved, dict):
+                        self.errors.append(f"Parameter is not an object in {method.upper()} {path}")
+                        continue
+                    if 'name' not in resolved:
                         self.errors.append(f"Parameter missing 'name' in {method.upper()} {path}")
-                    if 'in' not in param:
+                    if 'in' not in resolved:
                         self.errors.append(f"Parameter missing 'in' in {method.upper()} {path}")
     
     def _check_responses(self) -> None:
@@ -170,14 +231,19 @@ class OpenAPIValidator:
         
         if self.errors:
             lines.append(f"Errors ({len(self.errors)}):")
-            for error in self.errors:
+            # Show only the first 50 errors to keep output readable
+            for error in self.errors[:50]:
                 lines.append(f"  - {error}")
+            if len(self.errors) > 50:
+                lines.append(f"  ... and {len(self.errors) - 50} more errors")
             lines.append("")
         
         if self.warnings:
             lines.append(f"Warnings ({len(self.warnings)}):")
-            for warning in self.warnings:
+            for warning in self.warnings[:20]:
                 lines.append(f"  - {warning}")
+            if len(self.warnings) > 20:
+                lines.append(f"  ... and {len(self.warnings) - 20} more warnings")
             lines.append("")
         
         if not self.errors and not self.warnings:

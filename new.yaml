@@ -1,17 +1,97 @@
 ﻿openapi: 3.0.0
 info:
-  title: Test API
+  title: Sample API
+  description: A simple API for testing the documentation generator
   version: 1.1.0
 paths:
   /users:
     get:
-      summary: List users
+      summary: List all users
+      description: Returns a paginated list of users with updated filtering
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+        - name: status
+          in: query
+          description: Filter by user status
+          required: false
+          schema:
+            type: string
       responses:
         200:
-          description: OK
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Create a user
+      description: Adds a new user to the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        201:
+          description: User created
   /products:
     get:
-      summary: List products
+      summary: List all products
+      description: Returns a list of products
       responses:
         200:
-          description: OK
+          description: Successful response
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+          example: "user-123"
+        name:
+          type: string
+          description: User's full name
+          example: "John Doe"
+        email:
+          type: string
+          description: User's email address
+          example: "john@example.com"
+        status:
+          type: string
+          description: Account status
+          example: "active"
+    NewUser:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          description: User's full name
+          example: "Jane Smith"
+        email:
+          type: string
+          description: User's email address
+          example: "jane@example.com"
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
