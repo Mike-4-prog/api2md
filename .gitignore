@@ -1,18 +1,16 @@
+﻿# Python
 __pycache__/
-venv/
 *.pyc
+venv/
+
+# OS files
 .DS_Store
 Thumbs.db
-*.log
-docs/
-__pycache__/
-*.pyc
-*.json
-*.md
-!README.md
-__pycache__/
-*.pyc
+
+# Downloaded large test specs (keep the repo small)
 github-api.json
 stripe-api.json
 k8s-api.json
+
+# Test artifacts
 diff-test.md
