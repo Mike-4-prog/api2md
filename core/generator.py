@@ -492,8 +492,37 @@ class MarkdownGenerator:
                 if details.get('responses'):
                     lines.append("**Responses:**\n")
                     for status_code, response in details['responses'].items():
+                        if '$ref' in response:
+                            resolved_response = self._resolve_ref(response['$ref'])
+                            if resolved_response:
+                                response = resolved_response
                         description = response.get('description', '')
-                        lines.append(f"- **{status_code}:** {description}")
+                        lines.append(f"**{status_code}** - {description}\n")
+                        schema = None
+                        if 'content' in response:
+                            for media_type, media_obj in response['content'].items():
+                                if 'schema' in media_obj:
+                                    schema = media_obj['schema']
+                                    break
+                        elif 'schema' in response:
+                            schema = response['schema']
+                        if schema:
+                            if '$ref' in schema:
+                                resolved_schema = self._resolve_ref(schema['$ref'])
+                                if resolved_schema:
+                                    schema = resolved_schema
+                            if 'properties' in schema:
+                                lines.append("  | Property | Type | Description |")
+                                lines.append("  |----------|------|-------------|")
+                                for prop_name, prop_details in schema['properties'].items():
+                                    prop_type = self._describe_type(prop_details)
+                                    prop_desc = prop_details.get('description', '')
+                                    prop_desc = prop_desc.replace('\n', ' ').strip()
+                                    lines.append(f"  | `{prop_name}` | {prop_type} | {prop_desc} |")
+                                lines.append("\n")
+                            else:
+                                type_desc = self._describe_type(schema)
+                                lines.append(f"  *Response Schema:* {type_desc}\n")
                     lines.append("")
                 
                 lines.append("---\n")

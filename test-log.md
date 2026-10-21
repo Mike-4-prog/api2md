@@ -189,3 +189,8 @@ Last updated: October 2, 2026
 - Command: Select-String -Path docs/k8s-api.md -Pattern '\' | Measure-Object
 - Result: Count = 0 — no raw \ strings in the output
 - Status: Closed
+
+### Test 20: GitHub API — Response Schema Rendering
+- Command: python api2md.py --spec github-api.json --output docs/github-api-test.md
+- Result: PASS — 2,599 response tables generated
+- Status: Closed

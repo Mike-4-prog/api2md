@@ -1,4 +1,4 @@
-﻿# api2md
+# api2md
 
 Keeping API docs in sync with code is hard. api2md converts OpenAPI specs to Markdown, detects changes between versions, and generates AI-powered descriptions for new endpoints.
 
@@ -50,6 +50,7 @@ python api2md.py --diff old.yaml new.yaml
 - **Composition handling** (allOf, anyOf, oneOf)
 - **Version diffing** across endpoints, methods, parameters, and schemas
 - **JSON output** for CI/CD pipelines
+- **Response schema rendering** as Markdown tables
 - **Markdown output** for PR comments
 - **AI-powered descriptions** using Ollama
 
