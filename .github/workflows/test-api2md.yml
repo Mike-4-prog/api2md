@@ -1,0 +1,30 @@
+﻿name: Test api2md Action
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run api2md action
+        uses: ./
+        with:
+          spec: 'sample.yaml'
+          output: 'docs/action-test-output.md'
+          validate: 'true'
+
+      - name: Verify output exists
+        run: |
+          if [ ! -f docs/action-test-output.md ]; then
+            echo "Output file was not generated!"
+            exit 1
+          fi
+          echo "Output file generated successfully."
+          head -n 5 docs/action-test-output.md

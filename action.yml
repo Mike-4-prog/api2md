@@ -1,0 +1,25 @@
+﻿name: 'api2md'
+description: 'Convert OpenAPI/Swagger specs to Markdown documentation with change detection.'
+author: 'Michael Uzukwu'
+branding:
+  icon: 'file-text'
+  color: 'blue'
+inputs:
+  spec:
+    description: 'Path to the OpenAPI or Swagger spec file.'
+    required: true
+  output:
+    description: 'Path to write the generated Markdown file.'
+    required: false
+    default: 'API.md'
+  validate:
+    description: 'Run validation before generating (true/false).'
+    required: false
+    default: 'true'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.spec }}
+    - ${{ inputs.output }}
+    - ${{ inputs.validate }}
