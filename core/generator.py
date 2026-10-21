@@ -45,8 +45,17 @@ class MarkdownGenerator:
         if not ref or not isinstance(ref, str) or not ref.startswith('#/'):
             return None
         parts = ref.lstrip('#/').split('/')
-        if len(parts) < 3 or parts[0] != 'components':
+        
+        # Handle Swagger 2.0 refs by translating to OpenAPI 3.x paths
+        if parts and parts[0] == 'definitions':
+            parts = ['components', 'schemas'] + parts[1:]
+        elif parts and parts[0] == 'parameters':
+            parts = ['components', 'parameters'] + parts[1:]
+        elif parts and parts[0] == 'responses':
+            parts = ['components', 'responses'] + parts[1:]
+        elif len(parts) < 3 or parts[0] != 'components':
             return None
+        
         category = parts[1]
         name = parts[2]
         components = self.parser.get_components()

@@ -14,3 +14,9 @@ All notable changes and validations for api2md are documented here.
 ### Known Issues
 - Kubernetes Gateway API test blocked by lack of Swagger 2.0 support (in progress).
 - Response schemas are not yet rendered in Markdown output.
+
+## [October 2026] - Swagger 2.0 Support
+
+### Added
+- Swagger 2.0 support (translates \#/definitions/\, \#/parameters/\, and \#/responses/\ refs)
+- Tested against Kubernetes API (Swagger 2.0, 4.4 MB, 1,000+ endpoints). Validation errors: 0. Raw \ leaks: 0.

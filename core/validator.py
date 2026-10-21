@@ -69,8 +69,6 @@ class OpenAPIValidator:
             return obj
         
         parts = ref.lstrip('#/').split('/')
-        if len(parts) < 3 or parts[0] != 'components':
-            return obj
         
         # Walk the path through the spec
         current = self.spec
@@ -98,7 +96,10 @@ class OpenAPIValidator:
     
     def _check_required_fields(self) -> None:
         """Verify presence of required OpenAPI fields."""
-        required = ['openapi', 'info', 'paths']
+        if 'openapi' not in self.spec and 'swagger' not in self.spec:
+            self.errors.append("Missing required field: 'openapi' or 'swagger'")
+        
+        required = ['info', 'paths']
         for field in required:
             if field not in self.spec:
                 self.errors.append(f"Missing required field: '{field}'")

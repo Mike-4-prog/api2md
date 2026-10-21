@@ -171,3 +171,21 @@ Tracking real-world tests of api2md before finalization.
 | Validation errors on GitHub spec | 0 |
 
 Last updated: October 2, 2026
+### Test 17: Kubernetes API spec (Swagger 2.0)
+- Command: python api2md.py --spec k8s-api.json --validate
+- Result: PASS — "No issues found. Specification is valid."
+- Errors before fix: 14,561
+- Errors after fix: 0
+- Status: Closed
+
+### Test 18: Kubernetes API spec — Generate Markdown
+- Command: python api2md.py --spec k8s-api.json --output docs/k8s-api.md
+- Input spec size: 4.4 MB
+- Output markdown size: 1.04 MB
+- Result: PASS — no crash, no hang
+- Status: Closed
+
+### Test 19: Kubernetes API spec — \ leak check
+- Command: Select-String -Path docs/k8s-api.md -Pattern '\' | Measure-Object
+- Result: Count = 0 — no raw \ strings in the output
+- Status: Closed

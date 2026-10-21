@@ -15,12 +15,11 @@ api2md solves this by:
 
 This is not a tutorial project. It handles the hardest specs in the industry.
 
-| Spec | Size | Endpoints | Validation Errors | Raw \ Leaks |
-|------|------|-----------|-------------------|-----------------|
-| GitHub API | 13 MB | 900+ | 0 | 0 |
-| Stripe API | 8.3 MB | 500+ | 0 | 0 |
-
-*Note: Kubernetes Gateway API test is in progress (blocked by Swagger 2.0 support).*
+| Spec | Version | Size | Endpoints | Validation Errors | Raw \ Leaks |
+|------|---------|------|-----------|-------------------|-----------------|
+| GitHub API | OpenAPI 3.x | 13 MB | 900+ | 0 | 0 |
+| Stripe API | OpenAPI 3.x | 8.3 MB | 500+ | 0 | 0 |
+| Kubernetes API | Swagger 2.0 | 4.4 MB | 1,000+ | 0 | 0 |
 
 ## Quick Test (Under 5 Minutes)
 
@@ -46,7 +45,7 @@ python api2md.py --diff old.yaml new.yaml
 
 ## Features
 
-- **OpenAPI 3.x support** (JSON and YAML)
+- **OpenAPI 3.x and Swagger 2.0 support** (JSON and YAML)
 - **\ resolution** for parameters, request bodies, and schemas
 - **Composition handling** (allOf, anyOf, oneOf)
 - **Version diffing** across endpoints, methods, parameters, and schemas
