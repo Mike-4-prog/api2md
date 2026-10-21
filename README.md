@@ -43,6 +43,39 @@ python api2md.py --spec sample.yaml --output docs/sample.md
 python api2md.py --diff old.yaml new.yaml
 ~~~
 
+## Use as a GitHub Action
+
+You can use `api2md` directly in your GitHub workflows to automatically validate and generate docs whenever your API spec changes.
+
+```yaml
+name: Generate API Docs
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  api2md:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run api2md
+        uses: Mike-4-prog/api2md@main
+        with:
+          spec: 'openapi.yaml'
+          output: 'docs/API.md'
+          validate: 'true'
+          
+      - name: Commit generated docs
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs/API.md
+          git commit -m "docs: auto-generate API documentation" || exit 0
+          git push
+```
+
 ## Features
 
 - **OpenAPI 3.x and Swagger 2.0 support** (JSON and YAML)
