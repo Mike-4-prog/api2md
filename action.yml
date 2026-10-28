@@ -1,5 +1,5 @@
 ﻿name: 'api2md'
-description: 'Convert OpenAPI/Swagger specs to Markdown documentation with change detection.'
+description: 'Convert OpenAPI/Swagger specs to Markdown, diff versions for CI/CD, and generate AI descriptions.'
 author: 'Michael Uzukwu'
 branding:
   icon: 'file-text'
