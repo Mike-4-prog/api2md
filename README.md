@@ -2,6 +2,8 @@
 
 Keeping API docs in sync with code is hard. api2md converts OpenAPI specs to Markdown, detects changes between versions, and generates AI-powered descriptions for new endpoints.
 
+> **Runs in your CI. No SaaS, no dashboard, no data leaves your repo. One YAML file, MIT licensed.**
+
 ## The Problem
 
 API docs rot. When a spec changes, the docs lag behind. Developers get confused, support tickets pile up, and the documentation becomes a liability instead of an asset.
