@@ -17,7 +17,7 @@ api2md solves this by:
 
 This is not a tutorial project. It handles the hardest specs in the industry.
 
-| Spec | Version | Size | Endpoints | Validation Errors | Raw \ Leaks |
+| Spec | Version | Size | Endpoints | Validation Errors | Raw $ref Leaks |
 |------|---------|------|-----------|-------------------|-----------------|
 | GitHub API | OpenAPI 3.x | 13 MB | 900+ | 0 | 0 |
 | Stripe API | OpenAPI 3.x | 8.3 MB | 500+ | 0 | 0 |
@@ -25,7 +25,7 @@ This is not a tutorial project. It handles the hardest specs in the industry.
 
 ## Quick Test (Under 5 Minutes)
 
-~~~bash
+```bash
 # Clone the repository
 git clone https://github.com/Mike-4-prog/api2md.git
 cd api2md
@@ -43,7 +43,7 @@ python api2md.py --spec sample.yaml --output docs/sample.md
 
 # Diff two versions
 python api2md.py --diff old.yaml new.yaml
-~~~
+```
 
 ## Use as a GitHub Action
 
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Run api2md
-        uses: Mike-4-prog/api2md@main
+        uses: Mike-4-prog/api2md@v1.0.0
         with:
           spec: 'openapi.yaml'
           output: 'docs/API.md'
@@ -78,10 +78,12 @@ jobs:
           git push
 ```
 
+> **Note:** Always pin to a specific version (e.g., `@v1.0.0`) in production to avoid unexpected breaking changes.
+
 ## Features
 
 - **OpenAPI 3.x and Swagger 2.0 support** (JSON and YAML)
-- **\ resolution** for parameters, request bodies, and schemas
+- **`$ref` resolution** for parameters, request bodies, and schemas
 - **Composition handling** (allOf, anyOf, oneOf)
 - **Version diffing** across endpoints, methods, parameters, and schemas
 - **JSON output** for CI/CD pipelines
@@ -92,7 +94,7 @@ jobs:
 ## How It Works
 
 1. **Parse:** Loads the OpenAPI spec (JSON or YAML).
-2. **Validate:** Checks the spec for errors and resolves \.
+2. **Validate:** Checks the spec for errors and resolves `$ref` pointers.
 3. **Generate:** Converts the spec to Markdown documentation.
 4. **Diff:** Compares two versions and outputs changes in text, JSON, or Markdown.
 
