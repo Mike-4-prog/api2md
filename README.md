@@ -56,6 +56,9 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: write
+
 jobs:
   api2md:
     runs-on: ubuntu-latest
@@ -63,7 +66,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Run api2md
-        uses: Mike-4-prog/api2md@v1.0.0
+        uses: Mike-4-prog/api2md@v1.0.1
         with:
           spec: 'openapi.yaml'
           output: 'docs/API.md'
@@ -78,7 +81,7 @@ jobs:
           git push
 ```
 
-> **Note:** Always pin to a specific version (e.g., `@v1.0.0`) in production to avoid unexpected breaking changes.
+> **Note:** Always pin to a specific version (e.g., `@v1.0.1`) in production to avoid unexpected breaking changes.
 
 ## Features
 
